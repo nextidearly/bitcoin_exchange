@@ -2,16 +2,40 @@ import React, { Fragment, useState } from "react";
 import { Combobox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import CountDown from "../components/CountDown";
+import { networks } from "../config/index";
 
-export default function Second() {
-  const networks = [
-    { id: 1, name: "TRX", subname: "RC20" },
-    { id: 2, name: "BSC", subname: "BEP20(BSC)" },
-    { id: 3, name: "ETH", subname: "ERC20" },
-  ];
+export default function Second(props) {
+  const [address, setAddress] = useState("");
+  const [network, setNetwork] = useState("");
+  const [errors, setErrors] = useState({ address: "", network: "" });
 
-  const [selected, setSelected] = useState();
   const [query, setQuery] = useState("");
+
+  const submitForm = () => {
+    if (!address) {
+      setErrors({
+        address: "empty",
+        network: network,
+      });
+      return;
+    }
+
+    if (!network) {
+      setErrors({
+        address: address,
+        network: "empty",
+      });
+      return;
+    }
+
+    if (address && network) {
+      setErrors({
+        address: address,
+        network: network,
+      });
+      window.location.href = "/third";
+    }
+  };
 
   const filteredNetwork =
     query === ""
@@ -45,9 +69,18 @@ export default function Second() {
               </label>
               <input
                 type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 placeholder="wallet address"
                 className="text-lg p-5 w-full border-2 border-gray-400 rounded-md focus:outline-none"
               />
+              {errors.address !== "empty" ? (
+                ""
+              ) : (
+                <p className=" text-red-600">
+                  Please input your wallet address!
+                </p>
+              )}
             </div>
             <div className="block mb-14">
               <label
@@ -56,12 +89,12 @@ export default function Second() {
               >
                 Select Network
               </label>
-              <Combobox value={selected} onChange={setSelected}>
+              <Combobox value={network} onChange={setNetwork}>
                 <div className="relative mt-1">
                   <div className="relative w-full cursor-default overflow-hidden rounded-md border-2 border-gray-400 bg-white text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
                     <Combobox.Input
                       className="w-full border-none text-lg py-6 pl-4 pr-10 leading-5 text-gray-900 focus:ring-0 focus:outline-none"
-                      displayValue={(selected) => selected.name}
+                      displayValue={(network) => network.name}
                       placeholder="select network"
                       onChange={(event) => setQuery(event.target.value)}
                     />
@@ -128,14 +161,19 @@ export default function Second() {
                   </Transition>
                 </div>
               </Combobox>
+              {errors.network !== "empty" ? (
+                ""
+              ) : (
+                <p className=" text-red-600">Please select network!</p>
+              )}
             </div>
             <div className="flex justify-center">
-              <a
-                href="third"
+              <button
+                onClick={submitForm}
                 className="px-7 py-2 bg-yellow-400 hover:bg-yellow-500 text-xl rounded-sm"
               >
                 Continue
-              </a>
+              </button>
             </div>
           </div>
         </div>

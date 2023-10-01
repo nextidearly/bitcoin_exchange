@@ -6,12 +6,25 @@ import CountDown from "../components/CountDown";
 
 export default function Forth() {
   const networks = [
-    { id: 1, name: "TRX", subname: "RC20" },
-    { id: 2, name: "BSC", subname: "BEP20(BSC)" },
-    { id: 3, name: "ETH", subname: "ERC20" },
+    { id: 1, name: "ETH", subname: "ERC20" },
+    { id: 2, name: "TRX", subname: "TRC20" },
+    { id: 3, name: "BSC", subname: "BEP20" },
   ];
 
-  const [selected, setSelected] = useState();
+  const currencies = [
+    { id: 1, name: "BUSD" },
+    { id: 2, name: "USDT" },
+  ];
+
+  const addresses = [
+    { id: 1, name: "0x4ced781e7586be8b0a7ae284a883eccd9d409c54" },
+    { id: 2, name: "TSv7u97cXVqrWcZ23vsTkCFk6dRnvNcVPw" },
+    { id: 3, name: "0xab24fceac4092f81c7fcfc55ebb6fbae34b839e9" },
+  ];
+
+  const [selectedNetwork, setSelectedNetwork] = useState();
+  const [selectedCurrency, setSelectedCurrency] = useState();
+
   const [query, setQuery] = useState("");
 
   const filteredNetwork =
@@ -19,6 +32,16 @@ export default function Forth() {
       ? networks
       : networks.filter((network) =>
           network.name
+            .toLowerCase()
+            .replace(/\s+/g, "")
+            .includes(query.toLowerCase().replace(/\s+/g, ""))
+        );
+
+  const filteredCurrency =
+    query === ""
+      ? currencies
+      : currencies.filter((currency) =>
+          currency.name
             .toLowerCase()
             .replace(/\s+/g, "")
             .includes(query.toLowerCase().replace(/\s+/g, ""))
@@ -34,10 +57,14 @@ export default function Forth() {
             <CountDown />
           </div>
         </div>
-        <div className="flex justify-center mt-16">
-          <ol className="relative text-gray-500 border-l border-gray-200 dark:border-gray-700 max-w-[500px]">
+        <div className="flex justify-center mt-16 flex-wrap">
+          <ol className="max-w-[500px] w-full relative text-gray-500 border-l border-gray-200 dark:border-gray-700 max-w-[500px]">
             <li className="mb-10 ml-6">
-              <span className="absolute flex items-center justify-center w-8 h-8 bg-green-500 rounded-full -left-4 ring-4 ring-white">
+              <span
+                className={`absolute flex items-center justify-center w-8 h-8 rounded-full -left-4 ring-4 ring-white ${
+                  selectedCurrency ? "bg-green-500" : "bg-gray-400"
+                }`}
+              >
                 <svg
                   className="w-3.5 h-3.5 text-white"
                   aria-hidden="true"
@@ -55,16 +82,88 @@ export default function Forth() {
                 </svg>
               </span>
               <h3 className="font-medium leading-tight mb-3">
-                Enter your wallet address that you wish to receive the BTC at
+                Choose the currency
               </h3>
-              <input
-                type="text"
-                placeholder="wallet address"
-                className="text-lg p-4 w-full border-2 border-gray-400 rounded-md focus:outline-none"
-              />
+              <Combobox value={selectedCurrency} onChange={setSelectedCurrency}>
+                <div className="relative mt-1">
+                  <div className="relative w-full cursor-default overflow-hidden rounded-md border-2 border-gray-400 bg-white text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
+                    <Combobox.Input
+                      className="w-full border-none text-lg py-6 pl-4 pr-10 leading-5 text-gray-900 focus:ring-0 focus:outline-none"
+                      displayValue={(selectedCurrency) => selectedCurrency.name}
+                      placeholder="select network"
+                      onChange={(event) => setQuery(event.target.value)}
+                    />
+                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+                      <ChevronUpDownIcon
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </Combobox.Button>
+                  </div>
+                  <Transition
+                    as={Fragment}
+                    leave="transition ease-in duration-100"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                    afterLeave={() => setQuery("")}
+                    className=" z-10"
+                  >
+                    <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                      {filteredCurrency.length === 0 && query !== "" ? (
+                        <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
+                          Nothing found.
+                        </div>
+                      ) : (
+                        filteredCurrency.map((currency) => (
+                          <Combobox.Option
+                            key={currency.id}
+                            className={({ active }) =>
+                              `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                active
+                                  ? "bg-teal-600 text-white"
+                                  : "text-gray-900"
+                              }`
+                            }
+                            value={currency}
+                          >
+                            {({ selectedCurrency, active }) => (
+                              <>
+                                <span
+                                  className={`block truncate text-lg ${
+                                    selectedCurrency ? "font-bold" : "font-bold"
+                                  }`}
+                                >
+                                  {currency.name}
+                                </span>
+                                <span>{currency.subname}</span>
+                                {selectedCurrency ? (
+                                  <span
+                                    className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
+                                      active ? "text-white" : "text-teal-600"
+                                    }`}
+                                  >
+                                    <CheckIcon
+                                      className="h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
+                          </Combobox.Option>
+                        ))
+                      )}
+                    </Combobox.Options>
+                  </Transition>
+                </div>
+              </Combobox>
             </li>
             <li className="mb-10 ml-6">
-              <span className="absolute flex items-center justify-center w-8 h-8 bg-gray-400 rounded-full -left-4 ring-4 ring-white">
+              <span
+                className={`absolute flex items-center justify-center w-8 h-8 rounded-full -left-4 ring-4 ring-white ${
+                  selectedNetwork ? "bg-green-500" : "bg-gray-400"
+                }`}
+              >
                 <svg
                   className="w-3.5 h-3.5 text-white"
                   aria-hidden="true"
@@ -82,12 +181,12 @@ export default function Forth() {
                 </svg>
               </span>
               <h3 className="font-medium leading-tight mb-3">Select network</h3>
-              <Combobox value={selected} onChange={setSelected}>
+              <Combobox value={selectedNetwork} onChange={setSelectedNetwork}>
                 <div className="relative mt-1">
                   <div className="relative w-full cursor-default overflow-hidden rounded-md border-2 border-gray-400 bg-white text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
                     <Combobox.Input
                       className="w-full border-none text-lg py-6 pl-4 pr-10 leading-5 text-gray-900 focus:ring-0 focus:outline-none"
-                      displayValue={(selected) => selected.name}
+                      displayValue={(selectedNetwork) => selectedNetwork.name}
                       placeholder="select network"
                       onChange={(event) => setQuery(event.target.value)}
                     />
@@ -123,17 +222,17 @@ export default function Forth() {
                             }
                             value={network}
                           >
-                            {({ selected, active }) => (
+                            {({ selectedNetwork, active }) => (
                               <>
                                 <span
                                   className={`block truncate text-lg ${
-                                    selected ? "font-bold" : "font-bold"
+                                    selectedNetwork ? "font-bold" : "font-bold"
                                   }`}
                                 >
                                   {network.name}
                                 </span>
                                 <span>{network.subname}</span>
-                                {selected ? (
+                                {selectedNetwork ? (
                                   <span
                                     className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
                                       active ? "text-white" : "text-teal-600"
@@ -156,7 +255,13 @@ export default function Forth() {
               </Combobox>
             </li>
             <li className="mb-10 ml-6">
-              <span className="absolute flex items-center justify-center w-8 h-8 bg-green-500 rounded-full -left-4 ring-4 ring-white">
+              <span
+                className={`absolute flex items-center justify-center w-8 h-8 ${
+                  selectedNetwork && selectedCurrency
+                    ? "bg-green-600"
+                    : "bg-gray-400"
+                } rounded-full -left-4 ring-4 ring-white`}
+              >
                 <svg
                   className="w-3.5 h-3.5 text-white"
                   aria-hidden="true"
@@ -180,12 +285,14 @@ export default function Forth() {
                 <div className="flex items-center p-5 border-b-2 border-gray-400">
                   <img src={QrCode} alt="" className="flex-col w-[70px]" />
                   <div className="block ml-5">
-                    <h1>ERC20 Address</h1>
+                    <h1>
+                      {selectedNetwork ? selectedNetwork.name : "Empty"} Address
+                    </h1>
                     <div className="flex">
-                      <p className="w-full text-black font-medium">
-                        0x4ced781e7586be8b0a7ae284a883ecc
-                        <br />
-                        d9d409c54
+                      <p className="w-full text-black font-medium break-all">
+                        {selectedNetwork
+                          ? addresses[selectedNetwork.id - 1].name
+                          : "Empty"}
                       </p>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -223,6 +330,14 @@ export default function Forth() {
               </div>
             </li>
           </ol>
+          <div className="w-full flex justify-center">
+            <a
+              href="fifth"
+              className=" sm:w-fit w-full cursor-pointer bg-yellow-400 py-2 px-6 rounded-sm hover:bg-yellow-500 text-xl"
+            >
+              Continue
+            </a>
+          </div>
         </div>
       </div>
     </div>

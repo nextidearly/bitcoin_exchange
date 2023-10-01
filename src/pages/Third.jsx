@@ -25,7 +25,9 @@ export default function Third() {
             We have received your BTC receiving wallet address <br />{" "}
             successfully
           </div>
-          <div className="text-center text-2xl mt-10">Kindly buy it now</div>
+          <div className="text-center text-2xl mt-10 font-bold">
+            Kindly buy it now
+          </div>
 
           <div className="flex flex-wrap flex-row justify-around">
             <div className=" flex-col mt-10">

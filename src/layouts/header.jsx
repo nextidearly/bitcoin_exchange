@@ -17,7 +17,7 @@ export default function header() {
           </div>
         </a>
 
-        <ul className="flex items-center w-full">
+        {/* <ul className="flex items-center w-full">
           <li className="list-none px-4">
             <a
               href="#"
@@ -58,9 +58,9 @@ export default function header() {
               About us
             </a>
           </li>
-        </ul>
+        </ul> */}
       </div>
-      <div className="flex items-center">
+      {/* <div className="flex items-center">
         <button
           type="button"
           class="text-white flex items-center bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2 text-center mr-2 mb-2 "
@@ -80,7 +80,7 @@ export default function header() {
           </svg>
           Register
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }
