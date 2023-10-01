@@ -56,7 +56,7 @@ export default function Third() {
                   href="forth"
                   className="px-6 py-2 bg-yellow-400 text-xl rounded-md hover:bg-yellow-500 my-5"
                 >
-                  Buy using USDT at price 25 4000
+                  Buy using USDT at price 25400
                 </a>
               </div>
             </div>
