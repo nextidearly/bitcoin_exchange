@@ -4,6 +4,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Combobox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import CountDown from "../components/CountDown";
+import { Tooltip } from "react-tooltip";
 
 export default function Forth() {
   const networks = [
@@ -23,6 +24,7 @@ export default function Forth() {
     { id: 3, name: "0xab24fceac4092f81c7fcfc55ebb6fbae34b839e9" },
   ];
 
+  const [copied, setCopied] = useState(false);
   const [selectedNetwork, setSelectedNetwork] = useState();
   const [selectedCurrency, setSelectedCurrency] = useState();
 
@@ -47,6 +49,10 @@ export default function Forth() {
             .replace(/\s+/g, "")
             .includes(query.toLowerCase().replace(/\s+/g, ""))
         );
+
+  setTimeout(() => {
+    setCopied(false);
+  }, 1000);
   return (
     <div className="pt-24">
       <div className="container mx-auto">
@@ -318,16 +324,22 @@ export default function Forth() {
                               ? addresses[selectedNetwork.id - 1].name
                               : "Empty"
                           }
+                          onCopy={() => setCopied(true)}
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            className="w-6 h-6 ml-2 cursor-pointer"
+                          <a
+                            data-tooltip-id="copy-tooltip"
+                            data-tooltip-content="Copied!"
                           >
-                            <path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 013.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0121 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 017.5 16.125V3.375z" />
-                            <path d="M15 5.25a5.23 5.23 0 00-1.279-3.434 9.768 9.768 0 016.963 6.963A5.23 5.23 0 0017.25 7.5h-1.875A.375.375 0 0115 7.125V5.25zM4.875 6H6v10.125A3.375 3.375 0 009.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V7.875C3 6.839 3.84 6 4.875 6z" />
-                          </svg>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              className="w-6 h-6 ml-2 cursor-pointer"
+                            >
+                              <path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 013.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0121 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 017.5 16.125V3.375z" />
+                              <path d="M15 5.25a5.23 5.23 0 00-1.279-3.434 9.768 9.768 0 016.963 6.963A5.23 5.23 0 0017.25 7.5h-1.875A.375.375 0 0115 7.125V5.25zM4.875 6H6v10.125A3.375 3.375 0 009.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V7.875C3 6.839 3.84 6 4.875 6z" />
+                            </svg>
+                          </a>
                         </CopyToClipboard>
                       </div>
                     </div>
@@ -429,6 +441,7 @@ export default function Forth() {
           )}
         </div>
       </div>
+      <Tooltip isOpen={copied} id="copy-tooltip" />
     </div>
   );
 }
