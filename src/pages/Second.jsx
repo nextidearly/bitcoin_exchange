@@ -1,51 +1,31 @@
 import React, { Fragment, useState } from "react";
-import { Combobox, Transition } from "@headlessui/react";
+import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import CountDown from "../components/CountDown";
 import { networks } from "../config/index";
 
-export default function Second(props) {
-  const [address, setAddress] = useState("");
-  const [network, setNetwork] = useState("");
+export default function Second() {
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const [selectedNetwork, setSelectedNetwork] = useState(networks[1]);
   const [errors, setErrors] = useState({ address: "", network: "" });
 
-  const [query, setQuery] = useState("");
-
   const submitForm = () => {
-    if (!address) {
+    if (!selectedAddress) {
       setErrors({
         address: "empty",
-        network: network,
+        network: selectedNetwork,
       });
       return;
     }
 
-    if (!network) {
+    if (selectedAddress) {
       setErrors({
-        address: address,
-        network: "empty",
-      });
-      return;
-    }
-
-    if (address && network) {
-      setErrors({
-        address: address,
-        network: network,
+        address: selectedAddress,
+        network: selectedNetwork,
       });
       window.location.href = "/third";
     }
   };
-
-  const filteredNetwork =
-    query === ""
-      ? networks
-      : networks.filter((network) =>
-          network.name
-            .toLowerCase()
-            .replace(/\s+/g, "")
-            .includes(query.toLowerCase().replace(/\s+/g, ""))
-        );
 
   return (
     <div className="pt-24">
@@ -63,16 +43,20 @@ export default function Second(props) {
             <div className="block mb-14">
               <label
                 htmlFor=""
-                className="text-lg font-bold w-full text-lightblack"
+                className="text-lg font-medium w-full text-lightblack mb-3"
               >
                 Enter your wallet address that you wish to receive the BTC at
               </label>
               <input
                 type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                value={selectedAddress}
+                onChange={(e) => setSelectedAddress(e.target.value)}
                 placeholder="wallet address"
-                className="text-lg p-5 w-full border-2 border-gray-400 rounded-md focus:outline-none"
+                className={`text-lg mt-2 p-4 w-full border ${
+                  errors.address === "empty"
+                    ? "border-red-500"
+                    : "border-gray-500"
+                } rounded-md focus:outline-none`}
               />
               {errors.address !== "empty" ? (
                 ""
@@ -85,82 +69,66 @@ export default function Second(props) {
             <div className="block mb-14">
               <label
                 htmlFor=""
-                className="text-lg font-bold w-full text-lightblack"
+                className="text-lg font-medium w-full text-lightblack"
               >
                 Select Network
               </label>
-              <Combobox value={network} onChange={setNetwork}>
-                <div className="relative mt-1">
-                  <div className="relative w-full cursor-default overflow-hidden rounded-md border-2 border-gray-400 bg-white text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
-                    <Combobox.Input
-                      className="w-full border-none text-lg py-6 pl-4 pr-10 leading-5 text-gray-900 focus:ring-0 focus:outline-none"
-                      displayValue={(network) => network.name}
-                      placeholder="select network"
-                      onChange={(event) => setQuery(event.target.value)}
-                    />
-                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
+              <Listbox value={selectedNetwork} onChange={setSelectedNetwork}>
+                <div className="relative mt-2">
+                  <Listbox.Button className="relative border border-gray-500 w-full cursor-default rounded-md bg-white py-5 pl-5 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+                    <span className="block truncate font-medium">
+                      {selectedNetwork.name}
+                    </span>
+                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                       <ChevronUpDownIcon
                         className="h-5 w-5 text-gray-400"
                         aria-hidden="true"
                       />
-                    </Combobox.Button>
-                  </div>
+                    </span>
+                  </Listbox.Button>
                   <Transition
                     as={Fragment}
                     leave="transition ease-in duration-100"
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
-                    afterLeave={() => setQuery("")}
                   >
-                    <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                      {filteredNetwork.length === 0 && query !== "" ? (
-                        <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
-                          Nothing found.
-                        </div>
-                      ) : (
-                        filteredNetwork.map((network) => (
-                          <Combobox.Option
-                            key={network.id}
-                            className={({ active }) =>
-                              `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                                active
-                                  ? "bg-teal-600 text-white"
-                                  : "text-gray-900"
-                              }`
-                            }
-                            value={network}
-                          >
-                            {({ selected, active }) => (
-                              <>
-                                <span
-                                  className={`block truncate text-lg ${
-                                    selected ? "font-bold" : "font-bold"
-                                  }`}
-                                >
-                                  {network.name}
+                    <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                      {networks.map((network) => (
+                        <Listbox.Option
+                          key={network.id}
+                          className={({ active }) =>
+                            `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                              active
+                                ? "bg-amber-100 text-amber-900"
+                                : "text-gray-900"
+                            }`
+                          }
+                          value={network}
+                        >
+                          {({ selected }) => (
+                            <>
+                              <span
+                                className={`block truncate text-lg font-medium`}
+                              >
+                                {network.name}
+                              </span>
+                              <span className="block">{network.subname}</span>
+                              {selectedNetwork.id === network.id ? (
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
+                                  <CheckIcon
+                                    className="h-5 w-5 text-amber-600"
+                                    aria-hidden="true"
+                                  />
                                 </span>
-                                <span>{network.subname}</span>
-                                {selected ? (
-                                  <span
-                                    className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
-                                      active ? "text-white" : "text-teal-600"
-                                    }`}
-                                  >
-                                    <CheckIcon
-                                      className="h-5 w-5"
-                                      aria-hidden="true"
-                                    />
-                                  </span>
-                                ) : null}
-                              </>
-                            )}
-                          </Combobox.Option>
-                        ))
-                      )}
-                    </Combobox.Options>
+                              ) : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
                   </Transition>
                 </div>
-              </Combobox>
+              </Listbox>
               {errors.network !== "empty" ? (
                 ""
               ) : (

@@ -6,3 +6,5 @@ export const networks = [
   { id: 5, name: "BNB", subname: "BNB Beacon Chain(BEP2)" },
   { id: 6, name: "ETH", subname: "Ethereum(ERC20)" },
 ];
+
+export const networks1 = {};
