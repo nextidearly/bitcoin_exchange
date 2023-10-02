@@ -6,7 +6,7 @@ import { networks } from "../config/index";
 
 export default function Second() {
   const [selectedAddress, setSelectedAddress] = useState("");
-  const [selectedNetwork, setSelectedNetwork] = useState(networks[1]);
+  const [selectedNetwork, setSelectedNetwork] = useState("");
   const [errors, setErrors] = useState({ address: "", network: "" });
 
   const submitForm = () => {
@@ -18,7 +18,15 @@ export default function Second() {
       return;
     }
 
-    if (selectedAddress) {
+    if (!selectedNetwork) {
+      setErrors({
+        address: selectedAddress,
+        network: "empty",
+      });
+      return;
+    }
+
+    if (selectedAddress && selectedNetwork) {
       setErrors({
         address: selectedAddress,
         network: selectedNetwork,
@@ -52,7 +60,7 @@ export default function Second() {
                 value={selectedAddress}
                 onChange={(e) => setSelectedAddress(e.target.value)}
                 placeholder="wallet address"
-                className={`text-lg mt-2 p-4 w-full border ${
+                className={`text-lg mt-2 p-4 w-full border-2 ${
                   errors.address === "empty"
                     ? "border-red-500"
                     : "border-gray-500"
@@ -75,9 +83,15 @@ export default function Second() {
               </label>
               <Listbox value={selectedNetwork} onChange={setSelectedNetwork}>
                 <div className="relative mt-2">
-                  <Listbox.Button className="relative border border-gray-500 w-full cursor-default rounded-md bg-white py-5 pl-5 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+                  <Listbox.Button className="relative border-2 border-gray-500 w-full cursor-default rounded-md bg-white py-5 pl-5 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
                     <span className="block truncate font-medium">
-                      {selectedNetwork.name}
+                      {selectedNetwork ? (
+                        selectedNetwork.name
+                      ) : (
+                        <span className="text-lg text-gray-400 font-normal">
+                          select network
+                        </span>
+                      )}
                     </span>
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                       <ChevronUpDownIcon
